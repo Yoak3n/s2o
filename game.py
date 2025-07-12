@@ -9,18 +9,17 @@ class Game:
         self.name = data['name']
         self.playtime = data['playtime_forever']
         self.last_played_timestamp = data.get('rtime_last_played')
-        self._fetch_more_info()
 
     def __str__(self):
-        return f'''{self.name} ({self.game_id}) - {self.playtime} hours played
+        return f'''{self.name} ({self.game_id}) - {self.playtime/60 :.1f} hours played
 Genres: {self.genres}
 Platforms: {self.platforms}
 Last played: {self.last_played_timestamp}
 Cover art: {self.cover}
-
+Description: {self.description}
         '''
 
-    def _fetch_more_info(self):
+    def fetch_more_info(self):
         res = get_game_info(str(self.game_id))
         if not res['success']:
             raise Exception(f'Failed to fetch info for game {self.name} ({self.game_id})')
@@ -30,7 +29,7 @@ Cover art: {self.cover}
         for key in data['platforms']:
             if data['platforms'][key]:
                 self.platforms.append(key)
-        genres = [d['description'] for d in data['genres']] + [d['description'] for d in data['categories']]
+        genres = [d['description'] for d in data['genres']]
         self.genres = filter_invailed_genres(genres)
         self.cover = data['header_image']
         clean = re.compile('<.*?>')

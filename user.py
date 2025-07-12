@@ -1,3 +1,5 @@
+import time
+from typing import List
 from dotenv import load_dotenv,find_dotenv
 from api import get_user_vault
 from game import Game
@@ -5,6 +7,7 @@ class User:
     def __init__(self):
         self.id = ''
         self.api_key = ''
+        self.games:List[Game] = []
         self._get_config()
     
     def _get_config(self):
@@ -15,18 +18,49 @@ class User:
         if not self.id or not self.api_key:
             raise Exception('ID and API_KEY must be set in .env file')
 
-    def _collect_games(self,data:dict):
-        games = []
+    def _collect_games(self, data:dict):
+        games:List[Game] = []
+
         for d in data['response']['games']:
             game = Game(d)
             games.append(game)
-            break
-        self.games = games
+        # 选择导入哪部分数据
+        option = input(f'''{"="*40}
+1. 仅游玩时间超过 200 小时的游戏（{len([g for g in games if g.playtime/60 >200 ])}个）
+2. 仅游玩时间超过 500 小时的游戏（{len([g for g in games if g.playtime/60 > 500])}个）
+3. 仅最近2个月游玩的游戏（{len([g for g in games if g.last_played_timestamp and g.last_played_timestamp > time.time() - 60*24*3600])}个）
+4. 所有游戏（{len(games)}个）
+{"="*40}
+请选择导入游戏的范围（default=1）：''')
+        if option not in ['1','2','3','4']:
+            option = '1'
+        # 筛选游戏
+        self.games = []
+        if option == '1':
+            self.games = [g for g in games if g.playtime/60 > 200]
+        elif option == '2':
+            self.games = [g for g in games if g.playtime/60 > 500]
+        elif option == '3':
+            self.games = [g for g in games if g.last_played_timestamp and g.last_played_timestamp > time.time() - 60*24*3600]
+        elif option == '4':
+            self.games = games
+        # 筛选完成
+        print(f'筛选完成，共筛选出{len(self.games)}个游戏')
 
     def run(self):
         res = get_user_vault(steam_id = self.id,key = self.api_key)
         self._collect_games(res)
-        print(self.games[0].__str__())
+        index = 0
+        for g in self.games:
+            g.fetch_more_info()
+            index += 1
+            print(f'正在获取游戏 {index}/{len(self.games)} 的信息')
+            # 防限流
+            time.sleep(1)
+        with open('test.txt','w',encoding='utf-8') as f:
+            for g in self.games:
+                f.write(g.__str__() + '\n\n')
+        # print(self.games[0].__str__())
 if __name__ == '__main__':
     user = User()
     user.run()
