@@ -1,7 +1,12 @@
 import time
+import os
 from typing import List
-from dotenv import load_dotenv,find_dotenv
+
+from dotenv import load_dotenv
+from tqdm import tqdm
+
 from api import get_user_vault
+from utils import write_to_obsidian_vault
 from game import Game
 class User:
     def __init__(self):
@@ -12,7 +17,6 @@ class User:
     
     def _get_config(self):
         load_dotenv(verbose=True)
-        import os
         self.id = os.getenv('ID')
         self.api_key = os.getenv('API_KEY')
         if not self.id or not self.api_key:
@@ -51,16 +55,19 @@ class User:
         res = get_user_vault(steam_id = self.id,key = self.api_key)
         self._collect_games(res)
         index = 0
-        for g in self.games:
+        bar = tqdm(self.games, desc='获取游戏信息', unit='game')
+        for g in bar:
+            bar.set_description(f'获取游戏 {g.name} 的信息')
             g.fetch_more_info()
             index += 1
-            print(f'正在获取游戏 {index}/{len(self.games)} 的信息')
+            bar.update(1)
             # 防限流
-            time.sleep(1)
-        with open('test.txt','w',encoding='utf-8') as f:
-            for g in self.games:
-                f.write(g.__str__() + '\n\n')
-        # print(self.games[0].__str__())
+            time.sleep(3)
+        target = os.getenv('DIR')
+        if target is None:
+            raise Exception('DIR must be set in .env file')
+        write_to_obsidian_vault(self.games, os.getenv('DIR'))
+        bar.close()
 if __name__ == '__main__':
     user = User()
     user.run()

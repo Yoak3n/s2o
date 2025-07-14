@@ -1,4 +1,6 @@
 import re
+import time
+from datetime import datetime
 from api import get_game_info
 from utils import filter_invailed_genres
 
@@ -10,14 +12,27 @@ class Game:
         self.playtime = data['playtime_forever']
         self.last_played_timestamp = data.get('rtime_last_played')
 
+    def format_last_played(self):
+        """将时间戳转换为可读的时间格式"""
+        if not self.last_played_timestamp:
+            return "从未游玩"
+        try:
+            dt = datetime.fromtimestamp(self.last_played_timestamp)
+            return dt.strftime("%Y年%m月%d日 %H:%M")
+        except (ValueError, OSError):
+            return f"无效时间戳: {self.last_played_timestamp}"
+    
     def __str__(self):
-        return f'''{self.name} ({self.game_id}) - {self.playtime/60 :.1f} hours played
+        return f'''---
+Game ID: {self.game_id}
+Played Hours: {self.playtime/60 :.1f}
 Genres: {self.genres}
 Platforms: {self.platforms}
-Last played: {self.last_played_timestamp}
-Cover art: {self.cover}
+Last played: {self.format_last_played()}
+Cover: {self.cover}
 Description: {self.description}
-        '''
+---
+'''
 
     def fetch_more_info(self):
         res = get_game_info(str(self.game_id))
