@@ -10,4 +10,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
     finally:
-        input('运行完毕，按回车键退出...')
+        input('\n运行完毕，按回车键退出...')
