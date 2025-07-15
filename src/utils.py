@@ -54,7 +54,7 @@ def read_existing_content(file_path: str) -> tuple[str, str]:
         
         if first_separator == -1 or last_separator == -1 or first_separator == last_separator:
             return '', ''
-        # 一般情况下，第一个分隔线之前不应该存在内容,会破坏md文件的元数据
+        # 一般情况下，第一个分隔线之前不应该存在内容,会破坏md文件的元数据结构
         before_content = '\n'.join(lines[:first_separator]).strip()
         after_content = '\n'.join(lines[last_separator + 1:]).strip()
         
@@ -67,6 +67,9 @@ def read_existing_content(file_path: str) -> tuple[str, str]:
 def write_to_obsidian_vault(games:list, path:str):
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
+    option = input('是否忽略工具或软件？(y/N)')
+    if option.lower() == 'y':
+        games = [g for g in games if ('实用工具' or 'Utilities') not in g.genres]
     for g in games:
         clean_name = sanitize_filename(g.name)
         name = f'{clean_name}.md'
@@ -75,25 +78,20 @@ def write_to_obsidian_vault(games:list, path:str):
         # 读取现有文件的分隔线外内容
         before_content, after_content = read_existing_content(p)
         
-        # 构建完整内容
-        game_content = g.__str__()
         full_content = ''
         
         if before_content and before_content != '':
             full_content += before_content
         
-        full_content += game_content
-        
-        if after_content:
-            full_content += after_content
+        full_content += str(g)
+        if after_content and after_content != '':
+            full_content += '\n' + after_content
         
         try:
             with open(p, 'w', encoding='utf-8') as f:
                 f.write(full_content)
-                print(f'Wrote {g.name} to {p}')
         except OSError as e:
             print(f'Failed to write {g.name}: {e}')
-            # 尝试使用游戏ID作为备用文件名
             backup_name = f'game_{g.game_id}.md'
             backup_path = os.path.join(path, backup_name)
             with open(backup_path, 'w', encoding='utf-8') as f:

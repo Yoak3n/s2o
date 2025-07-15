@@ -23,23 +23,24 @@ class Game:
             return f"无效时间戳: {self.last_played_timestamp}"
     
     def __str__(self):
+        """获取分隔线内的游戏信息内容"""
         return f'''---
-Game ID: {self.game_id}
-Played Hours: {self.playtime/60 :.1f}
+GameID: {self.game_id}
+PlayedHours: {self.playtime/60 :.1f}
 Genres: {self.genres}
 Platforms: {self.platforms}
-Last played: {self.format_last_played()}
+LastPlayed: {self.format_last_played()}
 Cover: {self.cover}
 Description: {self.description}
----
-'''
+---'''
+    
 
     def fetch_more_info(self):
         res = get_game_info(str(self.game_id))
         if not res['success']:
             raise Exception(f'Failed to fetch info for game {self.name} ({self.game_id})')
         data = res['data']
-       
+        self.name = data['name']
         self.platforms = []
         for key in data['platforms']:
             if data['platforms'][key]:
@@ -48,6 +49,7 @@ Description: {self.description}
         self.genres = filter_invailed_genres(genres)
         self.cover = data['header_image']
         clean = re.compile('<.*?>')
-        self.description = re.sub(clean,'',data['detailed_description'])
+        self.description = re.sub(clean,'',data['short_description'])
+        self.description = self.description.replace(':','：')
         
 

@@ -33,7 +33,8 @@ class User:
 1. 仅游玩时间超过 200 小时的游戏（{len([g for g in games if g.playtime/60 >200 ])}个）
 2. 仅游玩时间超过 500 小时的游戏（{len([g for g in games if g.playtime/60 > 500])}个）
 3. 仅最近2个月游玩的游戏（{len([g for g in games if g.last_played_timestamp and g.last_played_timestamp > time.time() - 60*24*3600])}个）
-4. 所有游戏（{len(games)}个）
+4. 仅游玩过的游戏（{len([g for g in games if g.playtime > 0])}个）
+5. 所有游戏（{len(games)}个）
 {"="*40}
 请选择导入游戏的范围（default=1）：''')
         if option not in ['1','2','3','4']:
@@ -47,27 +48,24 @@ class User:
         elif option == '3':
             self.games = [g for g in games if g.last_played_timestamp and g.last_played_timestamp > time.time() - 60*24*3600]
         elif option == '4':
+            self.games = [g for g in games if g.playtime > 0]
+        elif option == '5':
             self.games = games
-        # 筛选完成
-        print(f'筛选完成，共筛选出{len(self.games)}个游戏')
 
     def run(self):
+        print('正在获取游戏列表...')
         res = get_user_vault(steam_id = self.id,key = self.api_key)
         self._collect_games(res)
-        index = 0
-        bar = tqdm(self.games, desc='获取游戏信息', unit='game')
+        bar = tqdm(self.games, desc='获取游戏信息', unit='Game')
         for g in bar:
             bar.set_description(f'获取游戏 {g.name} 的信息')
             g.fetch_more_info()
-            index += 1
-            bar.update(1)
             # 防限流
-            time.sleep(3)
+            time.sleep(1)   
+        bar.close()
         target = os.getenv('DIR')
         if target is None:
             raise Exception('DIR must be set in .env file')
         write_to_obsidian_vault(self.games, os.getenv('DIR'))
-        bar.close()
-if __name__ == '__main__':
-    user = User()
-    user.run()
+
+
