@@ -1,6 +1,6 @@
 import re
-import time
 from datetime import datetime
+
 from api import get_game_info,get_game_achievement
 from utils import filter_invailed_genres
 
@@ -26,8 +26,6 @@ class Game:
     
     def __str__(self):
         """获取分隔线内的游戏信息内容"""
-        
-
         output = f'''---
 GameID: {self.game_id}
 Genres: {self.genres}
@@ -53,7 +51,6 @@ Description: {self.description}
         if self.review_total is not None:
             lines.insert(achievement_index + 2, f'Reviews: {self.review_total}')
         
-
         return '\n'.join(lines)
 
     def fetch_more_info(self):

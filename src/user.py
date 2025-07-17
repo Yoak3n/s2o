@@ -67,9 +67,11 @@ class User:
             # 防限流
             time.sleep(1)   
         bar.close()
+
         target = os.getenv('DIR')
         if target is None:
             raise Exception('DIR must be set in .env file')
-        write_to_obsidian_vault(self.games, os.getenv('DIR'))
+        write_to_obsidian_vault(self.games, target)
+        print('游戏信息已获取并写入文件')
 
 

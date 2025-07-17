@@ -1,6 +1,11 @@
-不久前刷到一个Steam游戏数据导入到notion的[帖子](https://api.xiaoheihe.cn/v3/bbs/app/api/web/share?link_id=92db70876995)，下面有人问能否在Obsidian中实现，虽然一开始不怎么想自己动手写一个，但因为放假了时间够，就用碎片时间摸出来了
-
-原理还是调用Steam的api获取玩家的游戏列表，再逐个获取每个游戏的具体信息，然后写到目标文件夹，最后在Obsidian中通过[Projects](https://github.com/marcusolsson/obsidian-projects)插件展示出来
+### 开发
+本项目使用[UV](https://github.com/astral-sh/uv)管理Python环境，可以直接使用`uv sync`命令来同步环境依赖
+也可以使用pip来安装依赖
+```shell
+pip install -r requirements.txt
+```
+### 使用教程
+原理是调用Steam的api获取玩家的游戏列表，再逐个获取每个游戏的具体信息，然后写到目标文件夹，最后在Obsidian中通过[Projects](https://github.com/marcusolsson/obsidian-projects)插件展示出来
 #### 准备.env文件
 在程序所在目录创建一个`.env`文件，填写接下来我们获得的信息
 ##### 获取Steam api key
