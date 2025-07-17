@@ -1,21 +1,3 @@
----
-项目地址: https://github.com/Yoak3n/s2o
----
-### 项目追踪
-```dataview
-TABLE WITHOUT ID
-	file.link AS "日期",
-	s2o
-FROM "日志/日记"
-WHERE s2o
-SORT file.name DESC
-```
-
-### 项目构思
-在小黑盒刷到一个开始学编程时的动力之一的方向——把某些数据导进notion里展示出来
-如今技术力进步了很多，有人问怎么在obsidian中实现，恰巧我现在基本已经转到了obsidian上，自己也用得上，于是用碎片时间摸了出来
-
-### 使用教程
 不久前刷到一个Steam游戏数据导入到notion的[帖子](https://api.xiaoheihe.cn/v3/bbs/app/api/web/share?link_id=92db70876995)，下面有人问能否在Obsidian中实现，虽然一开始不怎么想自己动手写一个，但因为放假了时间够，就用碎片时间摸出来了
 
 原理还是调用Steam的api获取玩家的游戏列表，再逐个获取每个游戏的具体信息，然后写到目标文件夹，最后在Obsidian中通过[Projects](https://github.com/marcusolsson/obsidian-projects)插件展示出来
