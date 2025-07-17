@@ -56,10 +56,14 @@ class User:
         print('正在获取游戏列表...')
         res = get_user_vault(steam_id = self.id,key = self.api_key)
         self._collect_games(res)
+        achievement_option = input('是否获取游戏成就信息？(y/N)')
         bar = tqdm(self.games, desc='获取游戏信息', unit='Game')
         for g in bar:
-            bar.set_description(f'获取游戏 {g.name} 的信息')
+            bar.set_description(f'获取游戏 {g.name} 的详细信息')
             g.fetch_more_info()
+            if achievement_option.lower() == 'y':
+                bar.set_description(f'获取游戏 {g.name} 的成就信息')
+                g.fetch_achievement(steam_id = self.id,key = self.api_key)
             # 防限流
             time.sleep(1)   
         bar.close()
