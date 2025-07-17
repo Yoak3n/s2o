@@ -93,6 +93,6 @@ Description: {self.description}
         playerstats: dict = res['playerstats']
         if playerstats.get('error') == 'Requested app has no stats':
             return
-        achievements:list = playerstats['achievements']
+        achievements:list = playerstats.get('achievements',[])
         self.achievement_count = len([a for a in achievements if a['achieved'] == 1])
 
