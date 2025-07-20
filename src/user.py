@@ -37,7 +37,7 @@ class User:
 5. 所有游戏（{len(games)}个）
 {"="*40}
 请选择导入游戏的范围（default=1）：''')
-        if option not in ['1','2','3','4']:
+        if option not in ['1','2','3','4','5']:
             option = '1'
         # 筛选游戏
         self.games = []
