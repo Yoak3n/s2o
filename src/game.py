@@ -26,6 +26,14 @@ class Game:
     
     def __str__(self):
         """获取分隔线内的游戏信息内容"""
+        if not self.__has_more_info:
+            return f'''---
+GameID: {self.game_id}
+PlayedHours: {self.playtime/60 :.1f} 小时
+LastPlayed: {self.format_last_played()}
+---'''
+
+
         output = f'''---
 GameID: {self.game_id}
 Genres: {self.genres}
@@ -57,7 +65,9 @@ Description: {self.description}
         """获取更多游戏信息"""
         res = get_game_info(str(self.game_id))
         if not res['success']:
+            self.__has_more_info = False
             raise Exception(f'Failed to fetch info for game {self.name} ({self.game_id})')
+        self.__has_more_info = True
         data :dict = res['data']
         # 游戏名
         self.name = data['name']

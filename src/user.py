@@ -59,13 +59,19 @@ class User:
         achievement_option = input('是否获取游戏成就信息？(y/N)')
         bar = tqdm(self.games, desc='获取游戏信息', unit='Game')
         for g in bar:
-            bar.set_description(f'获取游戏 {g.name} 的详细信息')
-            g.fetch_more_info()
-            if achievement_option.lower() == 'y':
-                bar.set_description(f'获取游戏 {g.name} 的成就信息')
-                g.fetch_achievement(steam_id = self.id,key = self.api_key)
-            # 防限流
-            time.sleep(1)   
+            try:
+                bar.set_description(f'获取游戏 {g.name} 的详细信息')
+                g.fetch_more_info()
+                if achievement_option.lower() == 'y':
+                    bar.set_description(f'获取游戏 {g.name} 的成就信息')
+                    g.fetch_achievement(steam_id = self.id,key = self.api_key)
+                # 防限流
+                time.sleep(1)   
+            except Exception as e:
+                print(f'获取游戏 {g.name} 的详细信息失败',e)
+                continue
+            
+
         bar.close()
 
         target = os.getenv('DIR')
