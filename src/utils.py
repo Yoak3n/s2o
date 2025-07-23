@@ -63,37 +63,3 @@ def read_existing_content(file_path: str) -> tuple[str, str]:
     except Exception as e:
         print(f'Error reading existing content from {file_path}: {e}')
         return '', ''
-
-def write_to_obsidian_vault(games:list, path:str):
-    if not os.path.exists(path):
-        os.makedirs(path, exist_ok=True)
-    option = input('是否忽略工具或软件？(y/N)')
-    if option.lower() == 'y':
-        games = [g for g in games if ('实用工具' or 'Utilities') not in g.genres]
-    for g in games:
-        clean_name = sanitize_filename(g.name)
-        name = f'{clean_name}.md'
-        p = os.path.join(path, name)
-        
-        # 读取现有文件的分隔线外内容
-        before_content, after_content = read_existing_content(p)
-        
-        full_content = ''
-        
-        if before_content and before_content != '':
-            full_content += before_content
-        
-        full_content += str(g)
-        if after_content and after_content != '':
-            full_content += '\n' + after_content
-        
-        try:
-            with open(p, 'w', encoding='utf-8') as f:
-                f.write(full_content)
-        except OSError as e:
-            print(f'Failed to write {g.name}: {e}')
-            backup_name = f'game_{g.game_id}.md'
-            backup_path = os.path.join(path, backup_name)
-            with open(backup_path, 'w', encoding='utf-8') as f:
-                f.write(full_content)
-                print(f'Wrote {g.name} to {backup_path} (using backup name)')

@@ -13,6 +13,7 @@ class Game:
         self.last_played_timestamp = data.get('rtime_last_played')
         self.achievement_total  = None
         self.achievement_count = None
+        self.genres = []
 
     def format_last_played(self):
         """将时间戳转换为可读的时间格式"""
