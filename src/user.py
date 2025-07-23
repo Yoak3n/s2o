@@ -53,7 +53,8 @@ class User:
         elif option == '5':
             self.games = games
 
-    def __write_game_info__(self,game:Game):
+    def __write_game_info__(self,target:str,game:Game):
+
         clean_name = sanitize_filename(game.name)
         name = f'{clean_name}.md'
         abs_path = os.path.join(target, name)
@@ -105,7 +106,7 @@ class User:
                     bar.set_description(f'获取游戏 {g.name} 的成就信息')
                     g.fetch_achievement(steam_id = self.id,key = self.api_key)
 
-                self.__write_game_info__(g)
+                self.__write_game_info__(target,g)
                 # 防限流
                 time.sleep(1)   
             except Exception as e:
